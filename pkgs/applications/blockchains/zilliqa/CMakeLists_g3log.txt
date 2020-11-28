@@ -1,0 +1,25 @@
+diff --git a/cmake/InstallG3log.cmake b/cmake/InstallG3log.cmake
+index ed7d01fd0..eb4f03a4b 100644
+--- a/cmake/InstallG3log.cmake
++++ b/cmake/InstallG3log.cmake
+@@ -8,20 +8,6 @@ message(STATUS "Building and installing g3log")
+ include(ProcessorCount)
+ ProcessorCount(N)
+
+-# update submodule to the latest commit
+-execute_process(
+-    COMMAND git submodule update --init --recursive --remote src/depends/g3log
+-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-    RESULT_VARIABLE G3LOG_INSTALL_RET
+-    OUTPUT_FILE ${G3LOG_INSTALL_LOG}
+-    ERROR_FILE ${G3LOG_INSTALL_LOG}
+-)
+-
+-if(NOT "${G3LOG_INSTALL_RET}" STREQUAL "0")
+-    message(FATAL_ERROR "Error when building and installing g3log, see more in log ${G3LOG_INSTALL_LOG}")
+-endif()
+-
+-
+ # generate build directory
+ execute_process(
+     COMMAND ${CMAKE_COMMAND}

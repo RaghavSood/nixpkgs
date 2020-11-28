@@ -1,0 +1,24 @@
+diff --git a/cmake/InstallSchnorr.cmake b/cmake/InstallSchnorr.cmake
+index f36f2986f..a49d54db8 100644
+--- a/cmake/InstallSchnorr.cmake
++++ b/cmake/InstallSchnorr.cmake
+@@ -7,19 +7,6 @@ file(MAKE_DIRECTORY ${SCHNORR_BINARY_DIR})
+
+ message(STATUS "Building and installing Schnorr")
+
+-# download, check and untar
+-execute_process(
+-    COMMAND git submodule update --init --recursive --remote src/depends/Schnorr
+-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-    RESULT_VARIABLE SCHNORR_INSTALL_RET
+-    OUTPUT_FILE ${SCHNORR_INSTALL_LOG}
+-    ERROR_FILE ${SCHNORR_INSTALL_LOG}
+-)
+-
+-if(NOT "${SCHNORR_INSTALL_RET}" STREQUAL "0")
+-    message(FATAL_ERROR "Error when building and installing Schnorr (1), see more in log ${SCHNORR_INSTALL_LOG}")
+-endif()
+-
+ # generate build directory
+ execute_process(
+     COMMAND ${CMAKE_COMMAND}

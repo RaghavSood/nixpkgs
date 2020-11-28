@@ -1,0 +1,123 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2bc4dd4ca..ef79f249d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -38,6 +38,8 @@ find_package(Threads REQUIRED)
+
+ if(NOT TARGET jsonrpc-project)
+     include(InstallJsonrpccpp)
++    include_directories(${JSONRPC_INCLUDE_DIR})
++    message("JSON RPC Include: ${JSONRPC_INCLUDE_DIR}")
+ endif()
+
+ include(InstallG3log)
+@@ -52,14 +54,15 @@ find_package(websocketpp CONFIG REQUIRED)
+ include(InstallSchnorr)
+ include_directories(${SCHNORR_INCLUDE_DIR}/include)
+
+-find_package(PythonLibs REQUIRED)
++find_package(Python COMPONENTS Interpreter Development REQUIRED)
++include_directories(${Python_INCLUDE_DIRS})
+
+-string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
++# string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
+ list(GET PY_VERSION_LIST 0 PY_VERSION_MAJOR)
+ list(GET PY_VERSION_LIST 1 PY_VERSION_MINOR)
+ list(GET PY_VERSION_LIST 2 PY_VERSION_PATCH)
+
+-set(PY_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
++set(PY_VERSION "${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+
+
+ find_package(Boost COMPONENTS python-py${PY_VERSION} QUIET)
+@@ -89,10 +92,24 @@ endif()
+ message(STATUS "Python suffix: ${PY_COMP_SUFFIX}")
+
+
+-message(STATUS "Python Version: ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
++message(STATUS "Python Version: ${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}")
+
+ find_package(Boost COMPONENTS filesystem system unit_test_framework program_options ${PY_COMP_SUFFIX} REQUIRED)
+
++include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
++include_directories(SYSTEM ${Python_LIBRARY_DIRS})
++link_directories(${Boost_LIBRARY_DIRS})
++link_directories(${Boost_INCLUDE_DIRS})
++link_directories(${Python_LIBRARY_DIRS})
++link_directories(${Python_INCLUDE_DIRS})
++link_directories("/build/source/build/src/depends/jsonrpc/lib64")
++link_libraries("${Python_LIBRARY_DIRS}/libpython${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}m.so")
++
++message("Boost library dir: ${Boost_LIBRARY_DIRS}")
++message("Boost include dir: ${Boost_INCLUDE_DIRS}")
++message("Python library dir: ${Python_LIBRARY_DIRS}")
++message("Python include dir: ${Python_INCLUDE_DIRS}")
++
+ find_program(HOMEBREW NAMES brew PATH /usr/local/bin)
+
+ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" AND HOMEBREW)
+@@ -236,10 +253,10 @@ if(SJ_TEST_SJ_MISSING_MBTXNS)
+     add_definitions(-DSJ_TEST_SJ_MISSING_MBTXNS)
+ endif()
+
+-include(FindProtobuf)
+-set(protobuf_MODULE_COMPATIBLE TRUE)
+-find_package(Protobuf CONFIG REQUIRED)
+-include_directories(${PROTOBUF_INSTALL_DIR}/include)
++find_package(Protobuf REQUIRED)
++# set(protobuf_MODULE_COMPATIBLE TRUE)
++# find_package(Protobuf CONFIG REQUIRED)
++include_directories(${Protobuf_INCLUDE_DIRS})
+
+ include_directories(${CMAKE_SOURCE_DIR}/src/depends/libethash/include/)
+
+@@ -257,18 +274,6 @@ set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ set(CMAKE_CXX_EXTENSIONS OFF)
+
+-# pack related variables
+-set(CPACK_GENERATOR "DEB")
+-set(CPACK_PACKAGE_VERSION $ENV{ZIL_VER})
+-set(CPACK_PACKAGE_NAME $ENV{ZIL_PACK_NAME})
+-set(CPACK_DEBIAN_PACKAGE_NAME "zilliqa")
+-set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-system-dev, libboost-filesystem-dev, libboost-test-dev, libssl-dev, libleveldb-dev, libjsoncpp-dev, libsnappy-dev, cmake, libmicrohttpd-dev, libjsonrpccpp-dev, build-essential, pkg-config, libevent-dev, libminiupnpc-dev, libprotobuf-dev, protobuf-compiler, libboost-program-options-dev")
+-set(CPACK_PACKAGE_CONTACT "maintainers@zilliqa.com")
+-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Members of maintainers@zilliqa.com")
+-
+-# compiler and linker options
+-
+ add_compile_options(-Wall)
+ add_compile_options(-Werror)
+ add_compile_options(-pedantic)
+@@ -297,29 +302,6 @@ if (UNDEF_BEHAVIOR_SANITIZER)
+     message(STATUS "UNDEFINED BEHAVIOR SANITIZER enabled")
+ endif()
+
+-if (LIBFUZZER_SANITIZER)
+-    include(CodeCoverage)
+-    link_libraries(--coverage)
+-    link_libraries(-lgcov)
+-    add_compile_options(-fsanitize=fuzzer,address,undefined)
+-    add_compile_options(-fno-omit-frame-pointer)
+-    link_libraries(-fsanitize=fuzzer,address,undefined)
+-    message(STATUS "Libfuzzer with address and undefined behavior sanitizer enabled")
+-endif()
+-
+-
+-if (ENABLE_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+-    if (NOT TESTS)
+-        message(FATAL_ERROR "TESTS is not ON")
+-    endif()
+-    include(CodeCoverage)
+-    add_compile_options(--coverage)
+-    link_libraries(--coverage)
+-    add_custom_target(ctest COMMAND ${CMAKE_CTEST_COMMAND})
+-    # TODO: remove the hardcoded number in -j option
+-    setup_target_for_coverage(${PROJECT_NAME}_coverage ctest coverage "-j2;--output-on-failure")
+-endif()
+-
+ add_subdirectory (src)
+ add_subdirectory (daemon)
+
+

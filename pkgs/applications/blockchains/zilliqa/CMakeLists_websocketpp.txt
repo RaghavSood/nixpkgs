@@ -1,0 +1,31 @@
+diff --git a/cmake/InstallWebsocketpp.cmake b/cmake/InstallWebsocketpp.cmake
+index 6720c2b27..f7ea4af00 100644
+--- a/cmake/InstallWebsocketpp.cmake
++++ b/cmake/InstallWebsocketpp.cmake
+@@ -8,19 +8,6 @@ file(MAKE_DIRECTORY ${WEBSOCKETPP_BINARY_DIR})
+
+ message(STATUS "Building and installing websocketpp")
+
+-# update submodule to the latest commit
+-execute_process(
+-    COMMAND git submodule update --init --recursive --remote src/depends/websocketpp
+-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-    RESULT_VARIABLE WEBSOCKETPP_INSTALL_RET
+-    OUTPUT_FILE ${WEBSOCKETPP_INSTALL_LOG}
+-    ERROR_FILE ${WEBSOCKETPP_INSTALL_LOG}
+-)
+-
+-if(NOT "${WEBSOCKETPP_INSTALL_RET}" STREQUAL "0")
+-	message(FATAL_ERROR "Error when building and installing websocketpp (1), see more in log ${WEBSOCKETPP_INSTALL_LOG}")
+-endif()
+-
+ # generate build directory
+ execute_process(
+ 	COMMAND ${CMAKE_COMMAND}
+@@ -62,4 +49,4 @@ endif()
+
+ list(APPEND CMAKE_PREFIX_PATH ${WEBSOCKETPP_INSTALL_DIR})
+ list(APPEND CMAKE_MODULE_PATH "${WEBSOCKETPP_INSTALL_DIR}/lib/cmake/websocketpp")
+-link_directories(${WEBSOCKETPP_INSTALL_DIR}/lib)
+\ No newline at end of file
++link_directories(${WEBSOCKETPP_INSTALL_DIR}/lib)

@@ -8507,6 +8507,12 @@ in
 
   zile = callPackage ../applications/editors/zile { };
 
+  zilliqa = callPackage ../applications/blockchains/zilliqa {
+    libmicrohttpd = callPackage ../development/libraries/libmicrohttpd/0.9.44.nix { };
+  };
+
+  g3log = callPackage ../applications/blockchains/zilliqa/g3log.nix { };
+
   zinnia = callPackage ../tools/inputmethods/zinnia { };
   tegaki-zinnia-japanese = callPackage ../tools/inputmethods/tegaki-zinnia-japanese { };
 
@@ -14274,7 +14280,7 @@ in
 
   libmemcached = callPackage ../development/libraries/libmemcached { };
 
-  libmicrohttpd = callPackage ../development/libraries/libmicrohttpd { };
+  libmicrohttpd = callPackage ../development/libraries/libmicrohttpd/0.9.71.nix { };
 
   libmikmod = callPackage ../development/libraries/libmikmod {
     inherit (darwin.apple_sdk.frameworks) CoreAudio;
